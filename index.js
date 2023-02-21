@@ -8,9 +8,13 @@ const PORT = 4000;
 const httpServer = http.createServer(app);
 
 // create socket server based on httpServer
-const io = new Server(httpServer);
+const io = new Server(httpServer, {
+  cors: {
+    origin: ["http://localhost:3000"],
+  },
+});
 
-// socket Middlewares 
+// socket Middleware 
 // io.use((socket, next) => {
 //   const token = socket.handshake.auth.token;
 //   console.log(token);
@@ -30,45 +34,20 @@ app.get("/", (req, res) => {
 
 
 
-// io.on(eventName, cbfn); // on => listening
 
 // on => Listening, emit => Speaking
+
 io.on("connection", (socket) => {
-  console.log("Connection is ready", socket.id);
-
-  socket.on("disconnect", () =>{
-    console.log("Disconnected!", socket.id);
+  // console.log("Connection is ready");
+  socket.on("send-message", (data) => {
+    console.log(data);
+    socket.broadcast.emit("message-from-server", data);
   });
-
-  socket.on('clientEvent', (payload) => {
-    console.log("Msg->", payload);
-
-    // =>  Speak to only socket (only sender)
-    // socket.emit('serverEvent', payload); 
-    
-    // => Speak to all except sender
-    socket.broadcast.emit('serverEvent', payload); 
-    
-    // => Speak to all
-    // io.emit('serverEvent', payload); 
+  socket.on("disconnect", (socket) => {
+    console.log("User left.");
   });
-
-  // Room Example
-  socket.on("groupNameEvent", (arg) => {
-    // save room info permanently in db
-    let roomName = arg;
-    
-    // Join the Room
-    socket.join(roomName);
-    // => to all
-    // io.to(roomName).emit("OkRoomServerEvent", `Welcome to Room(${arg}). ${socket.id} joined`);
-
-    // => to all except sender 
-    socket.to(roomName).emit("OkRoomServerEvent", `Welcome to Room(${arg}). ${socket.id} joined`);
-
-  });
-
 });
+
 
 
 httpServer.listen(PORT, () => {
