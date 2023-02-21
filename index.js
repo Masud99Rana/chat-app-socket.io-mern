@@ -1,8 +1,27 @@
 const express = require("express");
 const http = require("http");
+const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 const { Server } = require("socket.io");
+
+// Internal imports
+const connectDB = require('./config/db');
+
+// Load env vars
+// dotenv.config({ path: './config/config.env' });
+// dotenv.config()
+dotenv.config();
+
+// Connect to database
+connectDB();
+
+
 const app = express();
-const PORT = 4000;
+
+// Body parser
+app.use(express.json());
+
+
 
 // create server through http
 const httpServer = http.createServer(app);
@@ -31,7 +50,6 @@ app.get("/", (req, res) => {
   // res.json({ data: "hello world from socket" });
   res.sendFile(__dirname + "/index.html");
 });
-
 
 
 
@@ -68,7 +86,9 @@ io.on("connection", (socket) => {
 });
 
 
+// listen server
+const port = process.env.PORT || 5000;
 
-httpServer.listen(PORT, () => {
-  console.log("Server is running at http://localhost:4000");
+httpServer.listen(port, () => {
+  console.log(`Server is running on port: ${port}`);
 });
