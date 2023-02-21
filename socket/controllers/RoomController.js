@@ -14,6 +14,8 @@ class RoomController extends BaseController {
     });
     room.save();
     this.socket.emit("new-room-created", { room });
+
+    this.joinRoom(roomId);
   };
 
   roomRemoved = async ({ roomId }) => {
