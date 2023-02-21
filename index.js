@@ -25,7 +25,7 @@ const io = new Server(httpServer);
 
 app.get("/", (req, res) => {
   // res.json({ data: "hello world from socket" });
-  res.sendFile(__dirname + "/client/index.html");
+  res.sendFile(__dirname + "/index.html");
 });
 
 
