@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Application</title>
+</head>
+
+<body>
+  <h1>Hello Socket</h1>
+
+  <ul class="msgList">
+  </ul>
+
+  <div id="chat-app">
+    <form class="myForm">
+      <input type="text" class="myInput">
+      <input type="submit" value="Submit">
+    </form>
+  </div>
+
+  <!-- <script src="/socket.io/socket.io.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+  <script>
+    var socket = io();
+
+    // localStorage.setItem('token',d.token);
+    // const socket = io({
+    //   auth: {
+    //     token: localStorage.getItem('token')
+    //   }
+    // });
+
+    let form = document.querySelector('form.myForm');
+    let msgList = document.querySelector('ul.msgList');
+    let msgField = document.querySelector('input.myInput');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      console.log("submitted!!");
+
+      let message = msgField.value;
+
+      // send message
+      // socket.emit('clientEvent', message); // speak
+
+      // send room name
+      socket.emit('groupNameEvent', message);
+
+      // Empty field
+      msgField.value = "";
+    });
+
+    // listen from server
+    socket.on('serverEvent', (payload) => {
+      console.log("payload->", payload);
+      msgList.innerHTML += `<li>${payload}</li>`;
+    });
+
+    // listen from room event
+    socket.on('OkRoomServerEvent', (...args) => {
+      console.log('OkRoomServerEvent Received', args);
+      msgList.innerHTML += `<li>${args}</li>`;
+    });
+
+  </script>
+</body>
+
+</html>
